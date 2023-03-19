@@ -16,7 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	libchain "github.com/sisu-network/lib/chain"
 	"github.com/sisu-network/lib/log"
 	"github.com/sodiumlabs/deyes/config"
 	"github.com/sodiumlabs/deyes/utils"
@@ -54,6 +53,7 @@ type EthClient interface {
 
 type defaultEthClient struct {
 	chain           string
+	chainId         int64
 	useExternalRpcs bool
 
 	clients     []*ethclient.Client
@@ -67,6 +67,7 @@ type defaultEthClient struct {
 func NewEthClients(cfg config.Chain, useExternalRpcs bool) EthClient {
 	c := &defaultEthClient{
 		chain:           cfg.Chain,
+		chainId:         cfg.ChainId,
 		useExternalRpcs: useExternalRpcs,
 		initialRpcs:     cfg.Rpcs,
 		lock:            &sync.RWMutex{},
@@ -236,7 +237,7 @@ func (c *defaultEthClient) processData(text string) []string {
 }
 
 func (c *defaultEthClient) GetExtraRpcs() ([]string, error) {
-	chainId := libchain.GetChainIntFromId(c.chain)
+	chainId := c.chainId
 	url := fmt.Sprintf("https://chainlist.org/chain/%d", chainId)
 	log.Verbosef("Getting extra rpcs status from remote link %s for chain %s", url, c.chain)
 

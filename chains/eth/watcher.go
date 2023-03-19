@@ -12,7 +12,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/groupcache/lru"
-	libchain "github.com/sisu-network/lib/chain"
 	"github.com/sisu-network/lib/log"
 	"github.com/sodiumlabs/deyes/chains"
 	deyesethtypes "github.com/sodiumlabs/deyes/chains/eth/types"
@@ -306,11 +305,6 @@ func (w *Watcher) acceptTx(tx *ethtypes.Transaction) (bool, error) {
 }
 
 func (w *Watcher) getFromAddress(chain string, tx *ethtypes.Transaction) (common.Address, error) {
-	signer := libchain.GetEthChainSigner(chain)
-	if signer == nil {
-		return common.Address{}, fmt.Errorf("cannot find signer for chain %s", chain)
-	}
-
 	msg, err := tx.AsMessage(ethtypes.NewLondonSigner(tx.ChainId()), nil)
 	if err != nil {
 		return common.Address{}, err

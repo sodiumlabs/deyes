@@ -8,8 +8,6 @@ import (
 	deyesethtypes "github.com/sodiumlabs/deyes/chains/eth/types"
 	"github.com/sodiumlabs/deyes/core"
 	"github.com/sodiumlabs/deyes/types"
-
-	libchain "github.com/sisu-network/lib/chain"
 )
 
 type ApiHandler struct {
@@ -53,11 +51,7 @@ func (api *ApiHandler) GetNonce(chain string, address string) (int64, error) {
 
 // This API only applies for ETH chains.
 func (api *ApiHandler) GetGasInfo(chain string) *deyesethtypes.GasInfo {
-	if libchain.IsETHBasedChain(chain) {
-		watcher := api.processor.GetWatcher(chain).(*chainseth.Watcher)
-		gasInfo := watcher.GetGasInfo()
-		return &gasInfo
-	} else {
-		return nil
-	}
+	watcher := api.processor.GetWatcher(chain).(*chainseth.Watcher)
+	gasInfo := watcher.GetGasInfo()
+	return &gasInfo
 }

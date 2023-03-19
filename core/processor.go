@@ -8,7 +8,6 @@ import (
 	"github.com/sodiumlabs/deyes/chains"
 	chainseth "github.com/sodiumlabs/deyes/chains/eth"
 
-	libchain "github.com/sisu-network/lib/chain"
 	"github.com/sisu-network/lib/log"
 	chainstypes "github.com/sodiumlabs/deyes/chains/types"
 	"github.com/sodiumlabs/deyes/client"
@@ -133,16 +132,9 @@ func (tp *Processor) DispatchTx(request *types.DispatchedTxRequest) {
 func (tp *Processor) GetNonce(chain string, address string) (int64, error) {
 	watcher := tp.GetWatcher(chain)
 	if watcher == nil {
-		return 0, fmt.Errorf("Cannot find watcher for chain %s", chain)
+		return 0, fmt.Errorf("cannot find watcher for chain %s", chain)
 	}
-
-	switch {
-	case libchain.IsETHBasedChain(chain):
-		return watcher.(*chainseth.Watcher).GetNonce(address)
-
-	default:
-		return 0, fmt.Errorf("unsupported chain for getting nonce, chain = %s", chain)
-	}
+	return watcher.(*chainseth.Watcher).GetNonce(address)
 }
 
 func (tp *Processor) GetWatcher(chain string) chains.Watcher {
