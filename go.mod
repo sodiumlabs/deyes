@@ -13,7 +13,7 @@ require (
 	github.com/sisu-network/lib v0.0.1-alpha9.0.20221225112039-4a88e8842833
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
-	golang.org/x/net v0.0.0-20220607020251-c690dde0001d
+	golang.org/x/net v0.7.0
 )
 
 require (
@@ -55,7 +55,7 @@ require (
 	github.com/tklauser/numcpus v0.5.0 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/sys v0.0.0-20220702020025-31831981b65f // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20201030142918-24207fddd1c3 // indirect
 	google.golang.org/grpc v1.33.2 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
@@ -63,6 +63,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace (
-	github.com/ethereum/go-ethereum v1.10.12 => github.com/sisu-network/go-ethereum v1.10.12-sisu001
-)
+replace github.com/ethereum/go-ethereum v1.10.12 => github.com/sisu-network/go-ethereum v1.10.12-sisu001
