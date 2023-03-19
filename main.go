@@ -53,6 +53,9 @@ func initialize(cfg *config.Deyes) {
 
 func main() {
 	configPath := os.Getenv("DEYES_CONFIG_PATH")
+	if len(configPath) == 0 {
+		configPath = "deyes.toml"
+	}
 	cfg := config.Load(configPath)
 	if len(cfg.LogDNA.Secret) > 0 {
 		opts := logger.Options{
