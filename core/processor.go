@@ -67,20 +67,12 @@ func (p *Processor) Start() {
 
 		var watcher chains.Watcher
 		var dispatcher chains.Dispatcher
-		if libchain.IsETHBasedChain(chain) {
-			// ETH chain
-			client := chainseth.NewEthClients(cfg, p.cfg.UseExternalRpcsInfo)
-			client.Start()
-
-			watcher = chainseth.NewWatcher(p.db, cfg, p.txsCh, p.txTrackCh, client)
-			dispatcher = chainseth.NewEhtDispatcher(chain, client)
-		} else {
-			panic(fmt.Errorf("Unknown chain %s", chain))
-		}
-
+		client := chainseth.NewEthClients(cfg, p.cfg.UseExternalRpcsInfo)
+		client.Start()
+		watcher = chainseth.NewWatcher(p.db, cfg, p.txsCh, p.txTrackCh, client)
+		dispatcher = chainseth.NewEhtDispatcher(chain, client)
 		p.watchers[chain] = watcher
 		go watcher.Start()
-
 		p.dispatchers[chain] = dispatcher
 		dispatcher.Start()
 	}
