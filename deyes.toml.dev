@@ -1,0 +1,23 @@
+db_host = "localhost"
+db_port = 3306
+db_username = "root"
+db_password = "password"
+db_schema = "deyes"
+
+server_port = 31001
+sisu_server_url = "http://localhost:25456"
+
+price_oracle_url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
+price_oracle_secret =
+
+[chains]
+[chains.ganache1]
+  chain = "ganache1"
+  block_time = 1000
+  starting_block = 0
+  rpc_url = "http://localhost:7545"
+[chains.ganache2]
+  chain = "ganache2"
+  block_time = 1000
+  starting_block = 0
+  rpc_url = "http://localhost:8545"

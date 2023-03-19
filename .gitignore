@@ -1,0 +1,8 @@
+.env
+deyes.toml
+deyes
+tmp
+out
+build
+.idea
+.vscode

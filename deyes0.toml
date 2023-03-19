@@ -1,0 +1,18 @@
+db_host = "localhost"
+db_port = 3306
+db_username = "root"
+db_password = "password"
+db_schema = "deyes0"
+
+server_port = 9091
+sodium_server_url = "http://localhost:26651"
+
+price_oracle_url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
+price_oracle_secret = ""
+
+[chains]
+[chains.ganache2]
+  chain = "ganache2"
+  block_time = 1000
+  starting_block = 0
+  rpcs = ["http://localhost:8545"]
