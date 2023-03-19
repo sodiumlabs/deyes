@@ -262,6 +262,14 @@ func (w *Watcher) processBlock(block *ethtypes.Block) []*ethtypes.Transaction {
 
 		ok, err := w.acceptTx(tx)
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				// If the transaction is not found, we can safely ignore it.
+				// This is because we are using the block hash to query the transaction
+				// receipt. If the block is not yet mined, the transaction will not be
+				// found.
+				txs = txs[1:]
+				continue
+			}
 			log.Error("Failed to accept tx, err = ", err)
 			// retry later
 			time.Sleep(1 * time.Second)
