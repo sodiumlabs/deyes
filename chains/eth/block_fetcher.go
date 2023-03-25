@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MinWaitTime = 500 // 500ms
+	MinWaitTime = 100 // 500ms
 )
 
 type defaultBlockFetcher struct {
@@ -103,6 +103,8 @@ func (bf *defaultBlockFetcher) scanBlocks() {
 		if bf.blockTime-bf.cfg.AdjustTime/4 > MinWaitTime {
 			bf.blockTime = bf.blockTime - bf.cfg.AdjustTime/4
 		}
+
+		log.Verbose("Block time on chain ", bf.cfg.Chain, " is ", bf.blockTime)
 		time.Sleep(time.Duration(bf.blockTime) * time.Millisecond)
 	}
 }
@@ -158,6 +160,5 @@ func (bf *defaultBlockFetcher) tryGetBlock() (*etypes.Block, error) {
 func (bf *defaultBlockFetcher) getBlockNumber() (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), RpcTimeOut)
 	defer cancel()
-
 	return bf.client.BlockNumber(ctx)
 }
