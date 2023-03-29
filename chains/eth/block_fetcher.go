@@ -56,6 +56,10 @@ func (bf *defaultBlockFetcher) setBlockHeight() {
 	log.Info("Watching from block ", bf.blockHeight, " for chain ", bf.cfg.Chain)
 }
 
+func isPolygonNetwork(chain string) bool {
+	return strings.Contains(chain, "polygon") || strings.Contains(chain, "mumbai")
+}
+
 func (bf *defaultBlockFetcher) scanBlocks() {
 	latestBlock, err := bf.getLatestBlock()
 	if err != nil {
@@ -85,8 +89,8 @@ func (bf *defaultBlockFetcher) scanBlocks() {
 				// The block exists but its header hash is equivalent to empty root hash but the internal
 				// block has some transaction inside. Geth client throws an error in this situation.
 				// This rarely happens but it does happen. Skip this block for now.
-				if strings.Index(bf.cfg.Chain, "polygon") >= 0 &&
-					strings.Index(err.Error(), "server returned non-empty transaction list but block header indicates no transactions") >= 0 {
+				if isPolygonNetwork(bf.cfg.Chain) &&
+					strings.Contains(err.Error(), "server returned non-empty transaction list but block header indicates no transactions") {
 					log.Warnf("server returned non-empty transaction at block height %d in chain %s", bf.blockHeight, bf.cfg.Chain)
 					bf.blockHeight = bf.blockHeight + 1
 				}

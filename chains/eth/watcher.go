@@ -8,9 +8,8 @@ import (
 	"sync"
 	"time"
 
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/groupcache/lru"
 	"github.com/sisu-network/lib/log"
 	"github.com/sodiumlabs/deyes/chains"
@@ -140,16 +139,22 @@ func (w *Watcher) waitForBlock() {
 
 		// Pass this block to the receipt fetcher
 		log.Info(w.cfg.Chain, " Block length = ", len(block.Transactions()))
-		txs := w.processBlock(block)
-		log.Info(w.cfg.Chain, " Filtered txs = ", len(txs))
+
+		ret := w.processBlock(block)
+
+		log.Info(w.cfg.Chain, " Filtered txs = ", len(ret.txs))
 
 		if w.cfg.UseEip1559 {
 			w.gasCal.AddNewBlock(block)
 		}
 
-		if len(txs) > 0 {
-			w.receiptFetcher.fetchReceipts(block.Number().Int64(), txs)
+		if len(ret.txs) > 0 {
+			w.receiptResponseCh <- ret
 		}
+
+		// if len(ret.txs) > 0 {
+		// 	w.receiptFetcher.fetchReceipts(block.Number().Int64(), ret.txs)
+		// }
 	}
 }
 
@@ -248,8 +253,18 @@ func (w *Watcher) getSuggestedGasPrice() (*big.Int, error) {
 	return w.client.SuggestGasPrice(ctx)
 }
 
-func (w *Watcher) processBlock(block *ethtypes.Block) []*ethtypes.Transaction {
-	ret := make([]*ethtypes.Transaction, 0)
+func (w *Watcher) processBlock(block *ethtypes.Block) *txReceiptResponse {
+	ret := &txReceiptResponse{
+		blockNumber: block.Number().Int64(),
+		blockHash:   block.Hash().String(),
+		txs:         make([]*ethtypes.Transaction, 0),
+		receipts:    make([]*ethtypes.Receipt, 0),
+	}
+
+	if !block.Header().Bloom.Test([]byte(w.vault)) {
+		log.Info("No vault address in bloom filter, skipping block")
+		return ret
+	}
 
 	txs := block.Transactions()
 
@@ -260,7 +275,7 @@ func (w *Watcher) processBlock(block *ethtypes.Block) []*ethtypes.Transaction {
 
 		tx := txs[0]
 
-		ok, err := w.acceptTx(tx)
+		receipt, ok, err := w.acceptTx(tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "not found") {
 				// If the transaction is not found, we can safely ignore it.
@@ -277,7 +292,8 @@ func (w *Watcher) processBlock(block *ethtypes.Block) []*ethtypes.Transaction {
 		}
 
 		if ok {
-			ret = append(ret, tx)
+			ret.txs = append(ret.txs, tx)
+			ret.receipts = append(ret.receipts, receipt)
 		}
 
 		txs = txs[1:]
@@ -286,30 +302,30 @@ func (w *Watcher) processBlock(block *ethtypes.Block) []*ethtypes.Transaction {
 	return ret
 }
 
-func (w *Watcher) acceptTx(tx *ethtypes.Transaction) (bool, error) {
+func (w *Watcher) acceptTx(tx *ethtypes.Transaction) (*ethtypes.Receipt, bool, error) {
 	if tx.To() == nil {
-		return false, nil
+		return nil, false, nil
 	}
 
 	// 如果直接转给了 vault 地址，那么就不需要再去查询 receipt 了
 	if strings.EqualFold(tx.To().String(), w.vault) {
-		return true, nil
+		return nil, true, nil
 	}
 
 	// 支持直接通过ERC20, ERC721, ERC1155转账到vault地址
 	receipt, err := w.client.TransactionReceipt(context.Background(), tx.Hash())
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
 
 	for _, log := range receipt.Logs {
 		// 如果是 vault 发出的交易
 		if strings.EqualFold(log.Address.String(), w.vault) {
-			return true, nil
+			return receipt, true, nil
 		}
 	}
 
-	return false, nil
+	return nil, false, nil
 }
 
 func (w *Watcher) getFromAddress(chain string, tx *ethtypes.Transaction) (common.Address, error) {
