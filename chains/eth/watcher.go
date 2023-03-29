@@ -262,7 +262,7 @@ func (w *Watcher) processBlock(block *ethtypes.Block) *txReceiptResponse {
 	}
 
 	if !block.Header().Bloom.Test([]byte(w.vault)) {
-		log.Info("No vault address in bloom filter, skipping block")
+		log.Info("No vault address in bloom filter, skipping block", w.vault)
 		return ret
 	}
 
