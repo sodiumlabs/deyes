@@ -261,10 +261,12 @@ func (w *Watcher) processBlock(block *ethtypes.Block) *txReceiptResponse {
 		receipts:    make([]*ethtypes.Receipt, 0),
 	}
 
-	// if !block.Header().Bloom.Test([]byte(w.vault)) {
-	// 	log.Info("No vault address in bloom filter, skipping block", w.vault)
-	// 	return ret
-	// }
+	vaultAddress := common.HexToAddress(w.vault)
+
+	if !block.Header().Bloom.Test(vaultAddress.Bytes()) {
+		log.Info("No vault address in bloom filter, skipping block", w.vault)
+		return ret
+	}
 
 	txs := block.Transactions()
 
