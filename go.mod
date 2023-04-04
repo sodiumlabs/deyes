@@ -22,12 +22,11 @@ require (
 	github.com/btcsuite/btcd v0.20.1-beta // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/containerd/containerd v1.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible // indirect
+	github.com/docker/docker v20.10.24+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -56,13 +55,8 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/sys v0.0.0-20220702020025-31831981b65f // indirect
-	google.golang.org/genproto v0.0.0-20201030142918-24207fddd1c3 // indirect
-	google.golang.org/grpc v1.33.2 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace (
-	github.com/ethereum/go-ethereum v1.10.12 => github.com/sisu-network/go-ethereum v1.10.12-sisu001
-)
+replace github.com/ethereum/go-ethereum v1.10.12 => github.com/sisu-network/go-ethereum v1.10.12-sisu001
